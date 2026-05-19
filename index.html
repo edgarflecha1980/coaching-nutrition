@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coaching Nutrition — cbikelab</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+  :root {
+    --bg:#111a14; --bg2:#182119; --card:#1c2a1e; --card2:#223025;
+    --border:rgba(255,255,255,0.07); --border2:rgba(255,255,255,0.13);
+    --coral:#f07b6b; --coral-dim:rgba(240,123,107,0.15);
+    --text:#eef2ee; --muted:#7a9a82; --hint:#4a6650;
+    --success:#5ab87a; --warn:#e8a44a;
+    --r:14px; --rl:18px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;line-height:1.5}
+
+  .topbar{display:flex;align-items:center;gap:12px;padding:0 2rem;height:56px;background:var(--bg2);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10}
+  .logo{width:32px;height:32px;background:var(--coral);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#fff;flex-shrink:0}
+  .topbar-title{font-weight:700;font-size:15px}
+  .topbar-sub{font-size:13px;color:var(--muted)}
+  .topbar-right{margin-left:auto;font-size:12px;color:var(--hint)}
+
+  .page{max-width:780px;margin:0 auto;padding:2.5rem 1.5rem 5rem}
+  .page-hd{margin-bottom:2rem}
+  .page-hd h1{font-size:28px;font-weight:800;letter-spacing:-.5px}
+  .page-hd p{font-size:14px;color:var(--muted);margin-top:4px}
+
+  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--rl);padding:1.25rem 1.5rem;margin-bottom:1rem}
+  .card-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:1rem}
+
+  .g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .g4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+  .field{display:flex;flex-direction:column;gap:6px}
+  .field label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+  input[type=number],select{width:100%;height:42px;padding:0 12px;font-size:15px;background:var(--card2);color:var(--text);border:1px solid var(--border2);border-radius:10px;outline:none;font-family:inherit;transition:border-color .15s;-moz-appearance:textfield}
+  input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
+  input[type=number]:focus,select:focus{border-color:var(--coral)}
+  select option{background:var(--card)}
+
+  .drop{border:1px dashed var(--border2);border-radius:var(--r);padding:1.75rem;text-align:center;cursor:pointer;color:var(--muted);transition:all .15s}
+  .drop:hover,.drop.over{border-color:var(--coral);background:var(--coral-dim);color:var(--coral)}
+  .drop.done{border-style:solid;border-color:var(--success);color:var(--success)}
+  .drop-icon{font-size:26px;margin-bottom:8px}
+  .drop-txt{font-size:14px}
+  .st{font-size:12px;font-family:'Courier New',monospace;color:var(--muted);margin-top:8px;min-height:18px}
+  .ot{color:var(--success)}.et{color:var(--coral)}
+
+  .mc{background:var(--card2);border-radius:10px;padding:12px 14px}
+  .mv{font-size:22px;font-weight:700;font-family:'Courier New',monospace}
+  .ml2{font-size:11px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.06em}
+
+  .eb{display:none;font-size:13px;color:var(--coral);background:var(--coral-dim);border:1px solid rgba(240,123,107,.3);border-radius:10px;padding:10px 14px;margin-top:10px}
+
+  .btn-pri{display:block;width:100%;padding:14px;font-size:15px;font-weight:700;background:var(--coral);color:#fff;border:none;border-radius:999px;cursor:pointer;margin-top:1rem;transition:background .15s,transform .1s}
+  .btn-pri:hover{background:#e5695a}
+  .btn-pri:active{transform:scale(.98)}
+
+  .sep{border:none;border-top:1px solid var(--border);margin:2rem 0}
+
+  /* resultado */
+  .phase-hd{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+  .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+  .d-pre{background:#5ab8e0}.d-in{background:var(--success)}.d-po{background:var(--coral)}
+  .ph-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em}
+  .l-pre{color:#5ab8e0}.l-in{color:var(--success)}.l-po{color:var(--coral)}
+
+  .pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+  .pill{display:inline-flex;align-items:center;font-size:12px;font-weight:600;padding:5px 13px;border-radius:999px}
+  .pg{background:rgba(90,184,122,.15);color:var(--success)}
+  .pb{background:rgba(90,184,224,.15);color:#5ab8e0}
+  .pa{background:var(--coral-dim);color:var(--coral)}
+  .pw{background:rgba(232,164,74,.15);color:var(--warn)}
+
+  .block{margin-bottom:14px}
+  .block-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:6px}
+  .block-body{font-size:14px;line-height:1.7;color:var(--text)}
+  .block-body ul{padding-left:1.2rem}
+  .block-body li{margin-bottom:4px}
+
+  .eg{margin-top:0;font-size:13px;padding:10px 14px;background:var(--bg2);border-radius:10px;color:var(--muted);border-left:3px solid var(--border2)}
+  .eg strong{color:var(--text)}
+  .aviso{font-size:12px;color:var(--coral);background:var(--coral-dim);border-radius:10px;padding:10px 14px;border-left:3px solid var(--coral);margin-bottom:14px}
+  .nota{font-size:12px;color:var(--muted);font-style:italic;margin-top:4px;padding:10px 14px;background:var(--bg2);border-radius:10px;border-left:3px solid var(--border2)}
+
+  .badge-intensidade{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:5px 13px;border-radius:999px;margin-bottom:1rem}
+
+  .h{display:none}
+  @media(max-width:520px){.g4{grid-template-columns:1fr 1fr}.g2{grid-template-columns:1fr}.page{padding:1.5rem 1rem 4rem}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">N</div>
+  <span class="topbar-title">Coaching Nutrition</span>
+  <span class="topbar-sub" style="margin-left:2px">cbikelab</span>
+  <span class="topbar-right">Planeador Nutricional de Treino</span>
+</div>
+
+<div class="page">
+  <div class="page-hd">
+    <h1>Plano Nutricional</h1>
+    <p>Insere os dados do treino e do atleta para gerar as recomendações pré, intra e pós treino.</p>
+  </div>
+
+  <!-- FIT UPLOAD -->
+  <div class="card">
+    <div class="card-title">Ficheiro FIT <span style="text-transform:none;letter-spacing:0;font-weight:400;font-size:12px">(opcional — preenche automaticamente)</span></div>
+    <div class="drop" id="dz">
+      <div class="drop-icon">↑</div>
+      <div class="drop-txt" id="dztxt">Arrastar ficheiro .fit ou <u>clicar para selecionar</u></div>
+      <input type="file" id="fi" accept=".fit" style="display:none">
+    </div>
+    <div class="st" id="pst"></div>
+  </div>
+
+  <!-- FIT METRICS -->
+  <div class="card h" id="msect">
+    <div class="card-title">Extraído do FIT</div>
+    <div class="g4">
+      <div class="mc"><div class="mv" id="mtss">—</div><div class="ml2">TSS</div></div>
+      <div class="mc"><div class="mv" id="mif">—</div><div class="ml2">IF</div></div>
+      <div class="mc"><div class="mv" id="mdur">—</div><div class="ml2">Duração</div></div>
+      <div class="mc"><div class="mv" id="msp" style="font-size:14px;padding-top:3px">—</div><div class="ml2">Modalidade</div></div>
+    </div>
+  </div>
+
+  <!-- TREINO -->
+  <div class="card">
+    <div class="card-title">Dados do Treino</div>
+    <div class="g4">
+      <div class="field"><label>TSS</label><input type="number" id="itss" placeholder="120" min="0" max="600"></div>
+      <div class="field"><label>IF</label><input type="number" id="iif" placeholder="0.82" step="0.01" min="0" max="1.5"></div>
+      <div class="field"><label>Duração (min)</label><input type="number" id="idur" placeholder="90" min="0"></div>
+      <div class="field"><label>Modalidade</label>
+        <select id="isp">
+          <option>Ciclismo</option><option>Corrida</option>
+          <option>Natação</option><option>Triathlon</option><option>Outro</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- ATLETA -->
+  <div class="card">
+    <div class="card-title">Atleta</div>
+    <div class="g2">
+      <div class="field"><label>Idade (anos)</label><input type="number" id="aage" placeholder="35" min="10" max="80"></div>
+      <div class="field"><label>Peso (kg)</label><input type="number" id="awt" placeholder="72" min="30" max="150"></div>
+    </div>
+  </div>
+
+  <div class="eb" id="eb"></div>
+  <button class="btn-pri" id="gbtn">Calcular Plano Nutricional →</button>
+
+  <hr class="sep h" id="sep">
+
+  <!-- RESULTADOS -->
+  <div id="rsect" class="h">
+
+    <div class="card" id="rpre-card">
+      <div class="phase-hd"><div class="dot d-pre"></div><span class="ph-lbl l-pre">Pré-treino</span></div>
+      <div id="rpre"></div>
+    </div>
+
+    <div class="card" id="rintra-card">
+      <div class="phase-hd"><div class="dot d-in"></div><span class="ph-lbl l-in">Intra-treino</span></div>
+      <div id="rintra"></div>
+    </div>
+
+    <div class="card" id="rpos-card">
+      <div class="phase-hd"><div class="dot d-po"></div><span class="ph-lbl l-po">Pós-treino</span></div>
+      <div id="rpos"></div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/fit-file-parser@1.9.9/dist/fit-file-parser.min.js"></script>
+<script>
+// ── FIT UPLOAD ────────────────────────────────────────────────────────
+var dz=document.getElementById('dz'),fi=document.getElementById('fi');
+dz.addEventListener('click',function(){fi.click();});
+dz.addEventListener('dragover',function(e){e.preventDefault();dz.classList.add('over');});
+dz.addEventListener('dragleave',function(){dz.classList.remove('over');});
+dz.addEventListener('drop',function(e){e.preventDefault();dz.classList.remove('over');if(e.dataTransfer.files[0])parseFit(e.dataTransfer.files[0]);});
+fi.addEventListener('change',function(e){if(e.target.files[0])parseFit(e.target.files[0]);});
+
+function parseFit(f){
+  var st=document.getElementById('pst');
+  if(!f.name.toLowerCase().endsWith('.fit')){st.innerHTML='<span class="et">Selecione um .fit válido</span>';return;}
+  document.getElementById('dztxt').textContent=f.name;
+  dz.classList.add('done');
+  st.innerHTML='A processar…';
+  var r=new FileReader();
+  r.onload=function(ev){
+    try{
+      if(typeof FitParser==='undefined')throw new Error('FitParser não carregado');
+      var p=new FitParser({force:true,lengthUnit:'km',speedUnit:'km/h'});
+      p.parse(ev.target.result,function(err,data){
+        if(err){st.innerHTML='<span class="et">Erro no parsing. Preencha manualmente.</span>';return;}
+        extractFit(data,st);
+      });
+    }catch(e){st.innerHTML='<span class="et">'+e.message+'</span>';}
+  };
+  r.readAsArrayBuffer(f);
+}
+
+function extractFit(data,st){
+  var sess=(data.sessions&&data.sessions[0])||(data.activity&&data.activity.sessions&&data.activity.sessions[0]);
+  if(!sess){st.innerHTML='<span class="et">Sessão não encontrada. Preencha manualmente.</span>';return;}
+  var tss=sess.training_stress_score,ifv=sess.intensity_factor;
+  var raw=sess.total_elapsed_time||sess.total_timer_time;
+  var sp=sess.sport||'cycling';
+  var sm={cycling:'Ciclismo',running:'Corrida',swimming:'Natação',triathlon:'Triathlon',generic:'Genérico'};
+  var spl=sm[sp]||sp,dm=raw?Math.round(raw/60):null;
+  if(tss)document.getElementById('itss').value=Math.round(tss);
+  if(ifv)document.getElementById('iif').value=ifv.toFixed(2);
+  if(dm)document.getElementById('idur').value=dm;
+  for(var o of document.getElementById('isp').options)if(o.value===spl){o.selected=true;break;}
+  document.getElementById('mtss').textContent=tss?Math.round(tss):'—';
+  document.getElementById('mif').textContent=ifv?ifv.toFixed(2):'—';
+  document.getElementById('mdur').textContent=dm?dm+'min':'—';
+  document.getElementById('msp').textContent=spl;
+  document.getElementById('msect').classList.remove('h');
+  var miss=[!tss&&'TSS',!ifv&&'IF'].filter(Boolean);
+  st.innerHTML='<span class="ot">✓ FIT processado.</span>'+(miss.length?' Falta: '+miss.join(', ')+' — preencha acima.':' Completo.');
+}
+
+// ── MOTOR NUTRICIONAL ────────────────────────────────────────────────
+function calcNutrition(tss, ifv, dur, age, wt, sp) {
+
+  // Zona de intensidade
+  var zona, zonaLabel, zonaClass;
+  if (!ifv) {
+    // Estimar pelo TSS/hora se não há IF
+    var tssH = tss && dur ? (tss / (dur / 60)) : null;
+    ifv = tssH ? Math.sqrt(tssH / 100) : 0.75;
+  }
+  if (ifv < 0.75)      { zona=1; zonaLabel='Z2 — Endurance'; zonaClass='pb'; }
+  else if (ifv < 0.90) { zona=2; zonaLabel='Limiar'; zonaClass='pw'; }
+  else                  { zona=3; zonaLabel='Alta Intensidade'; zonaClass='pa'; }
+
+  var dur60 = dur ? dur / 60 : null;
+
+  // ── PRÉ-TREINO ────────────────────────────────────────────────────
+  var pre = {};
+
+  // CHO pré em g/kg
+  var choPre_gkg;
+  if (zona===1)      choPre_gkg = dur60 ? Math.min(1 + dur60*0.3, 2.5) : 1.5;
+  else if (zona===2) choPre_gkg = dur60 ? Math.min(1.5 + dur60*0.4, 3.5) : 2.5;
+  else               choPre_gkg = dur60 ? Math.min(2 + dur60*0.5, 4.0) : 3.0;
+
+  pre.cho_g  = Math.round(choPre_gkg * wt);
+  pre.prot_g = zona===1 ? 15 : 20; // proteína moderada pré
+
+  pre.timing = zona===3 ? '2–3h antes (refeição) + snack 30–45min antes'
+             : zona===2 ? '2–3h antes (refeição principal)'
+             :             '1–2h antes (refeição leve)';
+
+  pre.alimentos = zona===1
+    ? ['Aveia com fruta e mel', 'Tosta de centeio com manteiga de amendoim', 'Iogurte grego com granola']
+    : zona===2
+    ? ['Massa ou arroz com frango grelhado (prato completo)', 'Batata-doce com ovo e legumes', 'Pão de sementes com atum e banana']
+    : ['Arroz branco com frango (digestão rápida)', 'Baguette com mel ou doce', 'Gel de HC + banana 30min antes'];
+
+  pre.hidratacao = '500 ml de água nas 2h anteriores. ' + (zona===3 ? 'Adicionar 300–500 mg sódio se for treino com suor elevado.' : 'Evitar bebidas com cafeína em excesso.');
+
+  if (zona===3 && dur && dur > 60) {
+    pre.aviso = 'Treino de alta intensidade com duração elevada: garantir reservas de glicogénio completamente cheias. Considera uma refeição extra na noite anterior.';
+  }
+
+  // ── INTRA-TREINO ──────────────────────────────────────────────────
+  var intra = {};
+
+  if (!dur || dur < 45) {
+    intra.necessidade = 'nenhuma';
+    intra.cho_gh = 0;
+    intra.agua_ml_h = 0;
+    intra.texto = 'Duração inferior a 45 minutos — não é necessária nutrição intra-treino. Água suficiente se o ambiente for quente.';
+
+  } else if (dur < 75) {
+    intra.necessidade = 'hidratação + eletrólitos';
+    intra.cho_gh = 0;
+    intra.agua_ml_h = 500;
+    intra.sodio_mg_h = 400;
+    intra.texto = 'Duração moderada — sem necessidade de hidratos de carbono. Foco na hidratação e reposição de eletrólitos.';
+    intra.produtos = 'Bebida isotónica diluída, pastilhas de eletrólitos (SiS Hydro, Precision Hydration) ou água com pitada de sal + fruta.';
+
+  } else if (dur < 120) {
+    var cho_min = zona===1 ? 30 : 40;
+    var cho_max = zona===1 ? 45 : 60;
+    intra.necessidade = 'HC + hidratação';
+    intra.cho_gh = cho_min + '–' + cho_max;
+    intra.cho_gh_num = Math.round((cho_min+cho_max)/2);
+    intra.agua_ml_h = zona===3 ? 700 : 600;
+    intra.sodio_mg_h = 500;
+    intra.texto = 'Transportador único (glicose). Iniciar aos 20–30 min, não esperar pela fadiga.';
+    intra.produtos = 'Gel energético (Maurten 100, SiS Beta Fuel), banana, tâmaras, barra de cereais. Lavar com água.';
+
+  } else {
+    // >120 min — transportadores múltiplos
+    var cho_h_min = zona===1 ? 60 : 75;
+    var cho_h_max = zona===1 ? 75 : 90;
+    intra.necessidade = 'HC múltiplos transportadores + eletrólitos intensivos';
+    intra.cho_gh = cho_h_min + '–' + cho_h_max;
+    intra.cho_gh_num = Math.round((cho_h_min+cho_h_max)/2);
+    intra.agua_ml_h = 750;
+    intra.sodio_mg_h = 800;
+    intra.texto = 'Acima de 90g HC/h usar obrigatoriamente ratio glicose:frutose 2:1. Treinar o intestino gradualmente.';
+    intra.produtos = 'Maurten 320 / SiS Beta Fuel 80 (fórmulas 2:1) + gel nos últimos 30min + barras de datas ou arroz. Pastilha de sal de hora a hora.';
+    intra.aviso = dur > 180 ? 'Treino >3h: considerar também proteína intra (BCAA ou whey) — 15–20g/h a partir da 2ª hora.' : null;
+  }
+
+  // Cafeína
+  if (zona >= 2 && dur && dur > 45) {
+    intra.cafeina = '3–6 mg/kg de cafeína (' + Math.round(3*wt) + '–' + Math.round(6*wt) + ' mg) — gel cafeinado ou café 45–60 min antes, ou a meio do treino.';
+  }
+
+  // ── PÓS-TREINO ────────────────────────────────────────────────────
+  var pos = {};
+
+  // Proteína: 0.3–0.4 g/kg; >40 anos: 0.4–0.5 g/kg; máx 40g
+  var protMin = age >= 40 ? 0.4 : 0.3;
+  var protMax = age >= 40 ? 0.5 : 0.4;
+  pos.prot_min = Math.min(Math.round(protMin * wt), 40);
+  pos.prot_max = Math.min(Math.round(protMax * wt), 40);
+
+  // CHO reposição glicogénio baseado em TSS e duração
+  var tssEff = tss || (dur ? ifv * ifv * dur * 100/60 : 50);
+  var cho_gkg_pos;
+  if (tssEff < 50)       cho_gkg_pos = 1.0;
+  else if (tssEff < 100) cho_gkg_pos = 1.5;
+  else if (tssEff < 150) cho_gkg_pos = 2.0;
+  else if (tssEff < 200) cho_gkg_pos = 2.5;
+  else                   cho_gkg_pos = 3.0;
+
+  pos.cho_g = Math.round(cho_gkg_pos * wt);
+
+  pos.timing = tssEff > 100 ? 'Janela anabólica: primeiros 30–45 min após o treino (crítico)'
+             : tssEff > 50  ? 'Idealmente dentro de 1h após o treino'
+             :                 'Dentro de 1–2h (menos urgente em Z2 curto)';
+
+  pos.alimentos = tssEff > 150
+    ? ['Batido de recuperação imediato: whey 30g + banana + leite', 'Refeição 1–2h depois: arroz ou massa + proteína + legumes', 'Chocolate de leite como opção rápida (ratio HC:prot ~3:1)']
+    : tssEff > 80
+    ? ['Iogurte grego com mel e fruta + ovo cozido', 'Wrap com frango, arroz e legumes', 'Batido de proteína com aveia e banana']
+    : ['Iogurte grego simples com fruta', 'Tosta com queijo fresco e mel', 'Ovo estrelado com pão de centeio'];
+
+  // Hidratação pós
+  var perdaEstimada = dur ? Math.round(dur / 60 * (zona===3 ? 1.2 : 0.8)) : 0.5;
+  pos.reidratacao = 'Repor 150% da perda estimada: ~' + Math.round(perdaEstimada * 1500) + ' ml nas próximas 4–6h. Urina cor palha = hidratação adequada.';
+
+  if (age >= 40) {
+    pos.aviso_idade = 'Atleta >40 anos: a síntese proteica muscular é reduzida — priorizar os ' + pos.prot_min + '–' + pos.prot_max + 'g proteína dentro dos primeiros 30 min. Considerar suplementação com leucina (2–3g) ou EAA.';
+  }
+
+  return { zona, zonaLabel, zonaClass, pre, intra, pos, wt, age, tssEff: Math.round(tssEff), ifv: Math.round(ifv*100)/100, dur };
+}
+
+// ── RENDER ──────────────────────────────────────────────────────────
+function li(arr){ return '<ul>'+arr.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>'; }
+
+function renderPlan(d) {
+  var pre=d.pre, intra=d.intra, pos=d.pos;
+
+  // badge de zona
+  var badge = '<span class="pill '+d.zonaClass+'" style="margin-bottom:14px;display:inline-flex">'+d.zonaLabel+'</span>';
+
+  // ── PRÉ
+  var preHtml = badge;
+  preHtml += '<div class="pills">';
+  preHtml += '<span class="pill pg">'+pre.cho_g+'g HC</span>';
+  preHtml += '<span class="pill pa">'+pre.prot_g+'g proteína</span>';
+  preHtml += '</div>';
+  if(pre.aviso) preHtml += '<div class="aviso">⚠ '+pre.aviso+'</div>';
+  preHtml += '<div class="block"><div class="block-lbl">Timing</div><div class="block-body">'+pre.timing+'</div></div>';
+  preHtml += '<div class="block"><div class="block-lbl">Opções de Refeição</div><div class="block-body">'+li(pre.alimentos)+'</div></div>';
+  preHtml += '<div class="block"><div class="block-lbl">Hidratação</div><div class="block-body">'+pre.hidratacao+'</div></div>';
+  document.getElementById('rpre').innerHTML = preHtml;
+
+  // ── INTRA
+  var intraHtml = '';
+  if(intra.necessidade==='nenhuma'){
+    intraHtml += '<div class="nota">'+intra.texto+'</div>';
+  } else {
+    intraHtml += '<div class="pills">';
+    if(intra.cho_gh_num>0) intraHtml += '<span class="pill pg">'+intra.cho_gh+'g HC/h</span>';
+    if(intra.agua_ml_h)    intraHtml += '<span class="pill pb">'+intra.agua_ml_h+' ml água/h</span>';
+    if(intra.sodio_mg_h)   intraHtml += '<span class="pill pw">'+intra.sodio_mg_h+' mg Na/h</span>';
+    intraHtml += '</div>';
+    if(intra.aviso) intraHtml += '<div class="aviso">⚠ '+intra.aviso+'</div>';
+    intraHtml += '<div class="block"><div class="block-lbl">Estratégia</div><div class="block-body">'+intra.texto+'</div></div>';
+    intraHtml += '<div class="block"><div class="block-lbl">Produtos</div><div class="eg"><strong>Sugestões:</strong> '+intra.produtos+'</div></div>';
+    if(intra.cafeina) intraHtml += '<div class="block"><div class="block-lbl">Cafeína</div><div class="block-body">'+intra.cafeina+'</div></div>';
+  }
+  document.getElementById('rintra').innerHTML = intraHtml;
+
+  // ── PÓS
+  var posHtml = '';
+  posHtml += '<div class="pills">';
+  posHtml += '<span class="pill pa">'+pos.prot_min+'–'+pos.prot_max+'g proteína</span>';
+  posHtml += '<span class="pill pg">'+pos.cho_g+'g HC</span>';
+  posHtml += '</div>';
+  if(pos.aviso_idade) posHtml += '<div class="aviso">'+pos.aviso_idade+'</div>';
+  posHtml += '<div class="block"><div class="block-lbl">Timing</div><div class="block-body">'+pos.timing+'</div></div>';
+  posHtml += '<div class="block"><div class="block-lbl">Opções de Refeição</div><div class="block-body">'+li(pos.alimentos)+'</div></div>';
+  posHtml += '<div class="block"><div class="block-lbl">Reidratação</div><div class="block-body">'+pos.reidratacao+'</div></div>';
+  document.getElementById('rpos').innerHTML = posHtml;
+
+  document.getElementById('sep').classList.remove('h');
+  document.getElementById('rsect').classList.remove('h');
+  document.getElementById('rsect').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ── BOTÃO ────────────────────────────────────────────────────────────
+function showErr(m){var b=document.getElementById('eb');b.textContent=m;b.style.display='block';}
+function clearErr(){document.getElementById('eb').style.display='none';}
+
+document.getElementById('gbtn').addEventListener('click', function(){
+  clearErr();
+  var tss = parseFloat(document.getElementById('itss').value)||null;
+  var ifv = parseFloat(document.getElementById('iif').value)||null;
+  var dur = parseFloat(document.getElementById('idur').value)||null;
+  var sp  = document.getElementById('isp').value;
+  var age = parseFloat(document.getElementById('aage').value)||null;
+  var wt  = parseFloat(document.getElementById('awt').value)||null;
+
+  if(!age||!wt){ showErr('Preenche a idade e o peso do atleta.'); return; }
+  if(!tss&&!ifv&&!dur){ showErr('Preenche pelo menos um parâmetro do treino (TSS, IF ou Duração).'); return; }
+
+  var result = calcNutrition(tss, ifv, dur, age, wt, sp);
+  renderPlan(result);
+});
+</script>
+</body>
+</html>
