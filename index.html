@@ -36,19 +36,10 @@
   input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
   input[type=number]:focus,select:focus{border-color:var(--coral)}
   select option{background:var(--card)}
-  .drop{border:1px dashed var(--border2);border-radius:var(--r);padding:1.5rem;text-align:center;cursor:pointer;color:var(--muted);transition:all .15s}
-  .drop:hover,.drop.over{border-color:var(--coral);background:var(--coral-dim);color:var(--coral)}
-  .drop.done{border-style:solid;border-color:var(--success);color:var(--success)}
-  .st{font-size:12px;font-family:'Courier New',monospace;color:var(--muted);margin-top:8px;min-height:18px}
-  .ot{color:var(--success)}.et{color:var(--coral)}
-  .mc{background:var(--card2);border-radius:10px;padding:12px 14px}
-  .mv{font-size:22px;font-weight:700;font-family:'Courier New',monospace}
-  .ml{font-size:11px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.06em}
   .eb{display:none;font-size:13px;color:var(--coral);background:var(--coral-dim);border:1px solid rgba(240,123,107,.3);border-radius:10px;padding:10px 14px;margin-top:10px}
   .btn-pri{display:block;width:100%;padding:14px;font-size:15px;font-weight:700;background:var(--coral);color:#fff;border:none;border-radius:999px;cursor:pointer;margin-top:1rem;transition:background .15s,transform .1s}
   .btn-pri:hover{background:#e5695a}
   .btn-pri:active{transform:scale(.98)}
-  .btn-pri:disabled{opacity:.45;cursor:not-allowed}
   .sep{border:none;border-top:1px solid var(--border);margin:2rem 0}
   .phase-hd{display:flex;align-items:center;gap:8px;margin-bottom:14px}
   .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
@@ -70,16 +61,7 @@
   .eg strong{color:var(--text)}
   .aviso{font-size:12px;color:var(--coral);background:var(--coral-dim);padding:9px 12px;border-left:3px solid var(--coral);margin-bottom:12px}
   .nota{font-size:12px;color:var(--muted);padding:9px 12px;background:var(--bg2);border-radius:10px;border-left:3px solid rgba(255,255,255,0.1);margin-top:8px}
-
-  /* segmented control para hora do dia */
-  .seg{display:flex;gap:0;background:var(--card2);border-radius:10px;padding:3px}
-  .seg label{flex:1;text-align:center;padding:8px 4px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;border-radius:8px;transition:all .15s;user-select:none}
-  .seg input[type=radio]{display:none}
-  .seg input[type=radio]:checked + label{background:var(--coral);color:#fff}
-
   .h{display:none}
-  .sp{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:rot .7s linear infinite;vertical-align:middle;margin-right:7px}
-  @keyframes rot{to{transform:rotate(360deg)}}
   @media(max-width:520px){.g4{grid-template-columns:1fr 1fr}.g2,.g3{grid-template-columns:1fr}.page{padding:1.5rem 1rem 4rem}}
 </style>
 </head>
@@ -98,28 +80,6 @@
     <p>Insere os dados do treino e do atleta para gerar as recomendações pré, intra e pós treino.</p>
   </div>
 
-  <!-- FIT UPLOAD -->
-  <div class="card">
-    <div class="card-title">Ficheiro FIT <span style="text-transform:none;letter-spacing:0;font-weight:400;font-size:12px">(opcional — preenche automaticamente)</span></div>
-    <div class="drop" id="dz">
-      <div style="font-size:24px;margin-bottom:6px">↑</div>
-      <div id="dztxt" style="font-size:14px">Arrastar ficheiro .fit ou <u>clicar para selecionar</u></div>
-      <input type="file" id="fi" accept=".fit" style="display:none">
-    </div>
-    <div class="st" id="pst"></div>
-  </div>
-
-  <!-- FIT METRICS -->
-  <div class="card h" id="msect">
-    <div class="card-title">Extraído do FIT</div>
-    <div class="g4">
-      <div class="mc"><div class="mv" id="mtss">—</div><div class="ml">TSS</div></div>
-      <div class="mc"><div class="mv" id="mif">—</div><div class="ml">IF</div></div>
-      <div class="mc"><div class="mv" id="mdur">—</div><div class="ml">Duração</div></div>
-      <div class="mc"><div class="mv" id="msp" style="font-size:14px;padding-top:3px">—</div><div class="ml">Modalidade</div></div>
-    </div>
-  </div>
-
   <!-- TREINO -->
   <div class="card">
     <div class="card-title">Dados do Treino</div>
@@ -136,10 +96,10 @@
     </div>
   </div>
 
-  <!-- ATLETA + HORA DO DIA -->
+  <!-- ATLETA -->
   <div class="card">
     <div class="card-title">Atleta</div>
-    <div class="g3" style="margin-bottom:16px">
+    <div class="g3">
       <div class="field"><label>Idade (anos)</label><input type="number" id="aage" placeholder="35" min="10" max="80"></div>
       <div class="field"><label>Peso (kg)</label><input type="number" id="awt" placeholder="72" min="30" max="150"></div>
       <div class="field"><label>Hora do treino <span style="font-weight:400;text-transform:none;letter-spacing:0">(opcional)</span></label>
@@ -175,249 +135,127 @@
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/fit-file-parser@1.9.9/dist/fit-file-parser.min.js"></script>
 <script>
-// ── FIT ──────────────────────────────────────────────────────────────
-var dz=document.getElementById('dz'),fi=document.getElementById('fi');
-dz.addEventListener('click',function(){fi.click();});
-dz.addEventListener('dragover',function(e){e.preventDefault();dz.classList.add('over');});
-dz.addEventListener('dragleave',function(){dz.classList.remove('over');});
-dz.addEventListener('drop',function(e){e.preventDefault();dz.classList.remove('over');if(e.dataTransfer.files[0])pFit(e.dataTransfer.files[0]);});
-fi.addEventListener('change',function(e){if(e.target.files[0])pFit(e.target.files[0]);});
-
-function pFit(f){
-  var st=document.getElementById('pst');
-  if(!f.name.toLowerCase().endsWith('.fit')){st.innerHTML='<span class="et">Selecione um .fit válido</span>';return;}
-  document.getElementById('dztxt').textContent=f.name;dz.classList.add('done');
-  st.innerHTML='<span class="sp"></span>A processar…';
-  var r=new FileReader();
-  r.onload=function(ev){
-    try{
-      if(typeof FitParser==='undefined')throw new Error('FitParser não carregado');
-      var p=new FitParser({force:true,lengthUnit:'km',speedUnit:'km/h'});
-      p.parse(ev.target.result,function(err,data){
-        if(err){st.innerHTML='<span class="et">Erro. Preencha manualmente.</span>';return;}
-        xFit(data,st);
-      });
-    }catch(e){st.innerHTML='<span class="et">'+e.message+'</span>';}
-  };
-  r.readAsArrayBuffer(f);
-}
-function xFit(data,st){
-  var s=(data.sessions&&data.sessions[0])||(data.activity&&data.activity.sessions&&data.activity.sessions[0]);
-  if(!s){st.innerHTML='<span class="et">Sessão não encontrada.</span>';return;}
-  var tss=s.training_stress_score,ifv=s.intensity_factor,raw=s.total_elapsed_time||s.total_timer_time;
-  var sm={cycling:'Ciclismo',running:'Corrida',swimming:'Natação',triathlon:'Triathlon',generic:'Genérico'};
-  var spl=sm[s.sport||'cycling']||s.sport,dm=raw?Math.round(raw/60):null;
-  if(tss)document.getElementById('itss').value=Math.round(tss);
-  if(ifv)document.getElementById('iif').value=ifv.toFixed(2);
-  if(dm)document.getElementById('idur').value=dm;
-  for(var o of document.getElementById('isp').options)if(o.value===spl){o.selected=true;break;}
-  document.getElementById('mtss').textContent=tss?Math.round(tss):'—';
-  document.getElementById('mif').textContent=ifv?ifv.toFixed(2):'—';
-  document.getElementById('mdur').textContent=dm?dm+'min':'—';
-  document.getElementById('msp').textContent=spl;
-  document.getElementById('msect').classList.remove('h');
-  var miss=[!tss&&'TSS',!ifv&&'IF'].filter(Boolean);
-  st.innerHTML='<span class="ot">✓ FIT processado.</span>'+(miss.length?' Falta: '+miss.join(', ')+' — preencha acima.':' Completo.');
-}
-
-// ── MOTOR NUTRICIONAL ────────────────────────────────────────────────
 function calc(tss,ifv,dur,age,wt,hora){
-
-  // Zona
   if(!ifv){var th=tss&&dur?(tss/(dur/60)):null;ifv=th?Math.sqrt(th/100):0.75;}
   var zona=ifv<0.75?1:ifv<0.90?2:3;
   var zl=zona===1?'Z2 — Endurance':zona===2?'Limiar':'Alta Intensidade';
   var zc=zona===1?'pb':zona===2?'pw':'pa';
   var d60=dur?dur/60:null;
 
-  // ── PRÉ-TREINO ────────────────────────────────────────────────────
+  // PRÉ
   var cho_gkg=zona===1?Math.min(1+(d60||1)*0.3,2.5):zona===2?Math.min(1.5+(d60||1)*0.4,3.5):Math.min(2+(d60||1)*0.5,4.0);
   var cho_pre=Math.round(cho_gkg*wt);
   var prot_pre=zona===1?15:20;
-
-  // Timing e refeições por hora do dia
-  var timing_pre, alim_pre, nota_hora=null;
+  var timing_pre,alim_pre,nota_hora=null;
+  var aviso_pre=zona===3&&dur&&dur>60?'Garantir reservas de glicogénio completamente cheias. Considera refeição rica em HC na noite anterior.':null;
+  var hidra_pre='500 ml de água nas 2h anteriores.'+(zona===3?' Adicionar 300–500 mg sódio se treino com suor elevado.':'')+
+    (hora==='manha'?' Reidratação após jejum noturno: 300–400 ml logo ao acordar.':'');
 
   if(hora==='manha'){
     timing_pre='30–60 min antes (jantar anterior já fez parte da preparação)';
-    if(zona===1){
-      alim_pre=[
-        'Batido: whey 20g + banana + leite de aveia (digestão rápida)',
-        'Iogurte grego + mel + granola (se >45min disponíveis)',
-        'Tosta de arroz com manteiga de amendoim e mel'
-      ];
-      nota_hora='Treino matinal em Z2: glicogénio hepático baixo após o jejum noturno. Priorizar HC de absorção rápida mesmo em intensidade baixa.';
-    } else if(zona===2){
-      alim_pre=[
-        'Batido: whey 25g + aveia 50g + banana (preparar na véspera)',
-        'Pão branco ou arroz frio com mel + whey shake',
-        'Barra de cereais com baixo teor de fibra + café'
-      ];
-      nota_hora='Manhã com treino de limiar: o jantar da noite anterior é a refeição pré-treino mais importante. Esta refeição serve apenas para topping-up de glicogénio.';
-    } else {
-      alim_pre=[
-        'Whey 25g + banana + arroz frio com mel (preparar na véspera)',
-        'Pão branco com doce/mel + café com açúcar',
-        'Gel HC 30min antes se não houver tempo para refeição'
-      ];
-      nota_hora='Alta intensidade de manhã: evitar fibra e gordura. O estômago precisa de estar o mais vazio possível. Cafeína recomendada.';
-    }
+    alim_pre=zona===1?
+      ['Batido: whey 20g + banana + leite de aveia','Iogurte grego + mel + granola','Tosta de arroz com manteiga de amendoim e mel']:
+      zona===2?
+      ['Batido: whey 25g + aveia 50g + banana (preparar na véspera)','Pão branco com mel + whey shake','Barra de cereais baixa em fibra + café']:
+      ['Whey 25g + banana + arroz frio com mel (preparar na véspera)','Pão branco com doce/mel + café com açúcar','Gel HC 30min antes se sem tempo para refeição'];
+    nota_hora=zona===1?'Treino matinal em Z2: glicogénio hepático baixo após jejum noturno. Priorizar HC de absorção rápida mesmo em intensidade baixa.':
+      zona===2?'Manhã com treino de limiar: o jantar da noite anterior é a refeição pré-treino mais importante. Esta refeição serve apenas para topping-up de glicogénio.':
+      'Alta intensidade de manhã: evitar fibra e gordura. Estômago o mais vazio possível. Cafeína recomendada.';
   } else if(hora==='almoco'){
     timing_pre='2–3h antes (pequeno-almoço reforçado) ou snack 45min antes';
-    if(zona===1){
-      alim_pre=[
-        'Aveia com fruta, mel e whey 20g misturado',
-        'Batido: whey + banana + flocos de aveia + leite',
-        'Pão integral com manteiga de amendoim e banana'
-      ];
-    } else if(zona===2){
-      alim_pre=[
-        'Pequeno-almoço completo: ovos + aveia + fruta + whey shake lateral',
-        'Panquecas de aveia com mel e fruta + café',
-        'Arroz de pequeno-almoço com mel e canela + iogurte grego'
-      ];
-    } else {
-      alim_pre=[
-        'Refeição 2–3h antes: arroz branco + frango sem pele + legumes cozidos',
-        'Snack 45min antes: banana + whey shake ou gel HC',
-        'Pão branco com doce + café 30min antes'
-      ];
-    }
+    alim_pre=zona===1?
+      ['Aveia com fruta, mel e whey 20g misturado','Batido: whey + banana + flocos de aveia + leite','Pão integral com manteiga de amendoim e banana']:
+      zona===2?
+      ['Pequeno-almoço completo: ovos + aveia + fruta + whey shake lateral','Panquecas de aveia com mel e fruta + café','Arroz de pequeno-almoço com mel e canela + iogurte grego']:
+      ['Refeição 2–3h antes: arroz branco + frango + legumes cozidos','Snack 45min antes: banana + whey shake ou gel HC','Pão branco com doce + café 30min antes'];
     nota_hora='Treino ao meio-dia: o pequeno-almoço é a base do plano pré-treino. Evitar refeição pesada a <2h do início.';
   } else if(hora==='tarde'){
     timing_pre='Almoço 3h antes (refeição principal) + snack 60min antes';
-    if(zona===1){
-      alim_pre=[
-        'Snack pré: iogurte grego + mel + banana',
-        'Snack pré: whey 20g + fruta + bolacha de arroz',
-        'Snack pré: tosta de centeio com manteiga de amendoim'
-      ];
-    } else if(zona===2){
-      alim_pre=[
-        'Almoço: massa ou arroz + frango grelhado + legumes',
-        'Snack 60min antes: whey 25g + banana + tosta',
-        'Snack 60min antes: batido de recuperação + fruta'
-      ];
-    } else {
-      alim_pre=[
-        'Almoço: arroz branco + proteína magra + legumes (pouca fibra)',
-        'Snack 60min antes: whey 25g + banana + mel',
-        'Snack 30min antes: gel HC ou 2 tâmaras + café'
-      ];
-    }
-    nota_hora='Tarde é o horário de melhor performance — aproveitar o pico circadiano de força e coordenação.';
+    alim_pre=zona===1?
+      ['Snack pré: iogurte grego + mel + banana','Snack pré: whey 20g + fruta + bolacha de arroz','Snack pré: tosta de centeio com manteiga de amendoim']:
+      zona===2?
+      ['Almoço: massa ou arroz + frango grelhado + legumes','Snack 60min antes: whey 25g + banana + tosta','Snack 60min antes: batido de recuperação + fruta']:
+      ['Almoço: arroz branco + proteína magra + legumes (pouca fibra)','Snack 60min antes: whey 25g + banana + mel','Snack 30min antes: gel HC ou 2 tâmaras + café'];
+    nota_hora='Tarde é o horário de melhor performance — pico circadiano de força e coordenação.';
   } else if(hora==='noite'){
     timing_pre='Jantar 2–3h antes ou snack leve 60–90min antes';
-    if(zona===1){
-      alim_pre=[
-        'Jantar leve: batata-doce + peixe grelhado + legumes',
-        'Snack: iogurte grego + mel + granola (se <2h disponíveis)',
-        'Whey 20g + banana se jantar for muito cedo'
-      ];
-    } else if(zona===2){
-      alim_pre=[
-        'Jantar: arroz ou massa + frango + legumes salteados',
-        'Snack 90min antes: whey 25g + fruta + tosta',
-        'Alternativa: batata-doce com ovo e queijo fresco'
-      ];
-    } else {
-      alim_pre=[
-        'Jantar 3h antes: arroz branco + proteína magra (pouca fibra)',
-        'Snack 60min antes: whey 25g + banana + mel',
-        'Evitar refeições pesadas — digestão incompleta prejudica a performance'
-      ];
-    }
-    nota_hora='Treino noturno: cuidado com a refeição pós-treino — o anabolismo proteico é relevante mas o HC em excesso pode perturbar o sono. Priorizar proteína e HC moderado.';
+    alim_pre=zona===1?
+      ['Jantar leve: batata-doce + peixe grelhado + legumes','Snack: iogurte grego + mel + granola (se <2h disponíveis)','Whey 20g + banana se jantar for muito cedo']:
+      zona===2?
+      ['Jantar: arroz ou massa + frango + legumes salteados','Snack 90min antes: whey 25g + fruta + tosta','Batata-doce com queijo fresco e mel']:
+      ['Jantar 3h antes: arroz branco + proteína magra (pouca fibra)','Snack 60min antes: whey 25g + banana + mel','Evitar refeições pesadas — digestão incompleta prejudica a performance'];
+    nota_hora='Treino noturno: excesso de HC simples antes de dormir pode perturbar o sono. Priorizar proteína de digestão lenta (caseína, iogurte grego) + HC moderado pós-treino.';
   } else {
-    // Sem hora especificada
     timing_pre=zona===3?'2–3h antes (refeição) + snack 30–45min antes':zona===2?'2–3h antes (refeição completa)':'1–2h antes (refeição leve)';
-    if(zona===1){
-      alim_pre=['Batido: whey 20g + banana + aveia + leite de aveia','Iogurte grego com mel, granola e fruta','Tosta integral com manteiga de amendoim e mel'];
-    } else if(zona===2){
-      alim_pre=['Refeição: arroz ou massa + frango + legumes','Batido: whey 25g + aveia 50g + banana','Batata-doce com ovo e queijo fresco'];
-    } else {
-      alim_pre=['Arroz branco + frango (digestão rápida, pouca fibra)','Whey 25g + banana + mel 45min antes','Gel HC + banana 30min antes se tempo limitado'];
-    }
+    alim_pre=zona===1?
+      ['Batido: whey 20g + banana + aveia + leite de aveia','Iogurte grego com mel, granola e fruta','Tosta integral com manteiga de amendoim e mel']:
+      zona===2?
+      ['Refeição: arroz ou massa + frango + legumes','Batido: whey 25g + aveia 50g + banana','Batata-doce com queijo fresco e mel']:
+      ['Arroz branco + frango (digestão rápida, pouca fibra)','Whey 25g + banana + mel 45min antes','Gel HC + banana 30min antes se tempo limitado'];
   }
 
-  var aviso_pre=zona===3&&dur&&dur>60?'Garantir reservas de glicogénio completamente cheias. Considera refeição rica em HC na noite anterior.':null;
-  var hidra_pre='500 ml de água nas 2h anteriores.'+(zona===3?' Adicionar 300–500 mg sódio se treino com suor elevado.':'')+
-    (hora==='manha'?' Reidratação após jejum noturno: começar com 300–400 ml logo ao acordar.':'');
-
-  // ── INTRA-TREINO ──────────────────────────────────────────────────
+  // INTRA
   var intra={};
   var prod_elet='Santa Madre Electrolytes, 226ERS Hydrazero, SiS Hydro, Precision Hydration 500 (ou outros)';
-  var prod_hc_simples='Santa Madre Gel (sabores naturais), 226ERS Super Gel, SiS Beta Fuel Gel, Maurten Gel 100 (ou outros). Barras: Santa Madre Barritas Energéticas, 226ERS Energy Bar, Clif Bar (ou outros)';
-  var prod_multi='Santa Madre Gel + Gomas Energéticas (ratio glicose:frutose 1:0.8), 226ERS Sub9 Gel (fórmula com frutose), Maurten Gel 160 (ou outros). Barras: Santa Madre Barritas, 226ERS Energy Cake (ou outros)';
+  var prod_hc='Santa Madre Gel, 226ERS Super Gel, SiS Beta Fuel Gel, Maurten Gel 100 (ou outros). Barras: Santa Madre Barritas Energéticas, 226ERS Energy Bar (ou outros)';
+  var prod_multi='Santa Madre Gel + Gomas Energéticas (ratio 1:0.8), 226ERS Sub9 Gel, Maurten Gel 160 (ou outros). Barras: Santa Madre Barritas, 226ERS Energy Cake (ou outros)';
 
   if(!dur||dur<45){
-    intra.tipo='none';
-    intra.txt='Duração <45 min — sem nutrição intra-treino necessária. Água se ambiente quente.';
+    intra.tipo='none';intra.txt='Duração <45 min — sem nutrição intra-treino necessária. Água se ambiente quente.';
   } else if(dur<75){
-    intra.tipo='elet';
-    intra.cho='0'; intra.agua=500; intra.sodio=400;
-    intra.txt='Sem HC necessário. Eletrólitos e hidratação são suficientes.';
-    intra.prod=prod_elet;
+    intra.tipo='elet';intra.cho='0';intra.agua=500;intra.sodio=400;
+    intra.txt='Sem HC necessário. Eletrólitos e hidratação são suficientes.';intra.prod=prod_elet;
   } else if(dur<120){
-    var cmin=zona===1?30:40, cmax=zona===1?45:60;
-    intra.tipo='hc';
-    intra.cho=cmin+'–'+cmax; intra.choN=Math.round((cmin+cmax)/2);
-    intra.agua=zona===3?700:600; intra.sodio=500;
-    intra.txt='Transportador único (glicose). Iniciar aos 20–30 min, sem esperar pela fadiga. Fontes de absorção rápida.';
-    intra.prod=prod_hc_simples;
-    intra.ratio=null;
+    var cmin=zona===1?30:40,cmax=zona===1?45:60;
+    intra.tipo='hc';intra.cho=cmin+'–'+cmax;intra.agua=zona===3?700:600;intra.sodio=500;
+    intra.txt='Transportador único (glicose). Iniciar aos 20–30 min, sem esperar pela fadiga.';intra.prod=prod_hc;
   } else {
-    // >120min — rácio 1:0.8
-    var hmin=zona===1?60:75, hmax=zona===1?75:90;
-    intra.tipo='multi';
-    intra.cho=hmin+'–'+hmax; intra.choN=Math.round((hmin+hmax)/2);
-    intra.agua=750; intra.sodio=800;
-    var glu=Math.round(intra.choN/(1+0.8)), fru=Math.round(intra.choN-glu);
+    var hmin=zona===1?60:75,hmax=zona===1?75:90;
+    var choN=Math.round((hmin+hmax)/2);
+    var glu=Math.round(choN/(1+0.8)),fru=choN-glu;
+    intra.tipo='multi';intra.cho=hmin+'–'+hmax;intra.agua=750;intra.sodio=800;
     intra.txt='Rácio glicose:frutose 1:0.8 — '+glu+'g glicose + '+fru+'g frutose por hora. Permite absorção máxima sem saturar o transportador SGLT1. Iniciar aos 15–20 min e manter cadência regular.';
     intra.prod=prod_multi;
-    intra.aviso=dur>180?'Treino >3h: adicionar BCAA ou whey hidrolisado — 15–20g/h a partir da 2ª hora para proteção muscular.':null;
+    intra.aviso=dur>180?'Treino >3h: adicionar BCAA ou whey hidrolisado — 15–20g/h a partir da 2ª hora.':null;
   }
-  if(zona>=2&&dur&&dur>45)intra.cafeina='3–6 mg/kg cafeína ('+Math.round(3*wt)+'–'+Math.round(6*wt)+' mg). Gel cafeinado Santa Madre Gel Cafeína, 226ERS Sub9 Gel Cafeína, ou café — 45–60 min antes ou a meio do treino.';
+  if(zona>=2&&dur&&dur>45)intra.cafeina='3–6 mg/kg cafeína ('+Math.round(3*wt)+'–'+Math.round(6*wt)+' mg). Santa Madre Gel Cafeína, 226ERS Sub9 Gel Cafeína (ou outros) — 45–60 min antes ou a meio do treino.';
 
-  // ── PÓS-TREINO ────────────────────────────────────────────────────
+  // PÓS
   var tssE=tss||(dur?ifv*ifv*dur*100/60:50);
   var cho_pos_gkg=tssE<50?1.0:tssE<100?1.5:tssE<150?2.0:tssE<200?2.5:3.0;
-  var pmn=age>=40?0.4:0.3, pmx=age>=40?0.5:0.4;
-  var pMin=Math.min(Math.round(pmn*wt),40), pMax=Math.min(Math.round(pmx*wt),40);
+  var pmn=age>=40?0.4:0.3,pmx=age>=40?0.5:0.4;
+  var pMin=Math.min(Math.round(pmn*wt),40),pMax=Math.min(Math.round(pmx*wt),40);
   var cho_pos=Math.round(cho_pos_gkg*wt);
+  var timing_pos,alim_pos;
 
-  var timing_pos, alim_pos;
   if(hora==='manha'){
     timing_pos='Pequeno-almoço completo imediatamente após (janela anabólica + primeira refeição do dia)';
     alim_pos=['Ovos mexidos (3–4) + aveia com fruta e mel + sumo de laranja natural','Whey 30g + aveia + banana se sem tempo para cozinhar','Iogurte grego + granola + mel + ovo cozido lateral'];
   } else if(hora==='noite'){
     timing_pos='30–45 min após (priorizar proteína, HC moderado para não perturbar o sono)';
-    alim_pos=['Whey 30g + leite morno (caseína + whey) — absorção noturna','Frango ou peixe + batata-doce pequena + legumes','Iogurte grego + mel (se treino leve) — evitar excesso de HC antes de dormir'];
-    if(!nota_hora)nota_hora='Treino noturno: excesso de HC simples antes de dormir pode perturbar o sono. Priorizar proteína de digestão lenta (caseína, iogurte grego) + HC moderado.';
+    alim_pos=['Whey 30g + leite morno (caseína + whey para absorção noturna)','Frango ou peixe + batata-doce pequena + legumes','Iogurte grego + mel — evitar excesso de HC simples antes de dormir'];
   } else {
     timing_pos=tssE>100?'Primeiros 30–45 min após treino (crítico)':tssE>50?'Dentro de 1h após treino':'Dentro de 1–2h';
-    alim_pos=tssE>150?['Batido imediato: whey 30g + banana + leite (ratio HC:prot ~3:1)','Refeição 1–2h depois: arroz ou massa + proteína + legumes','Chocolate de leite como opção rápida de recuperação']:
-             tssE>80?['Whey 25g + iogurte grego + mel + fruta','Wrap com frango, arroz e legumes','Batata-doce com salmão grelhado']:
-                     ['Iogurte grego com fruta e mel','Whey 20g + leite + banana','Tosta com queijo fresco e mel'];
+    alim_pos=tssE>150?
+      ['Batido imediato: whey 30g + banana + leite (ratio HC:prot ~3:1)','Refeição 1–2h depois: arroz ou massa + proteína + legumes','Chocolate de leite como opção rápida de recuperação']:
+      tssE>80?
+      ['Whey 25g + iogurte grego + mel + fruta','Wrap com frango, arroz e legumes','Batata-doce com salmão grelhado']:
+      ['Iogurte grego com fruta e mel','Whey 20g + leite + banana','Tosta com queijo fresco e mel'];
   }
 
   var reid='Repor ~'+Math.round((dur||60)/60*(zona===3?1.2:0.8)*1500)+' ml nas próximas 4–6h. Urina cor palha = hidratação adequada.';
-  var aviso_pos=age>=40?'Atleta >40a: síntese proteica reduzida — garantir '+pMin+'–'+pMax+'g proteína dentro dos primeiros 30 min. Considerar leucina isolada (2–3g) ou EAA para potenciar resposta anabólica.':null;
+  var aviso_pos=age>=40?'Atleta >40a: garantir '+pMin+'–'+pMax+'g proteína dentro dos primeiros 30 min. Considerar leucina isolada (2–3g) ou EAA para potenciar a resposta anabólica.':null;
 
-  return{zona,zl,zc,cho_pre,prot_pre,timing_pre,alim_pre,hidra_pre,aviso_pre,nota_hora,intra,pMin,pMax,cho_pos,timing_pos,alim_pos,reid,aviso_pos};
+  return{zl,zc,cho_pre,prot_pre,timing_pre,alim_pre,hidra_pre,aviso_pre,nota_hora,intra,pMin,pMax,cho_pos,timing_pos,alim_pos,reid,aviso_pos};
 }
 
-// ── RENDER ───────────────────────────────────────────────────────────
 function li(a){return '<ul>'+a.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>';}
 
 function render(d){
   var badge='<span class="pill '+d.zc+'" style="margin-bottom:12px;display:inline-flex">'+d.zl+'</span>';
 
-  // PRÉ
-  var pH=badge;
-  pH+='<div class="pills"><span class="pill pg">'+d.cho_pre+'g HC</span><span class="pill pa">'+d.prot_pre+'g proteína</span></div>';
+  var pH=badge+'<div class="pills"><span class="pill pg">'+d.cho_pre+'g HC</span><span class="pill pa">'+d.prot_pre+'g proteína</span></div>';
   if(d.aviso_pre)pH+='<div class="aviso">'+d.aviso_pre+'</div>';
   pH+='<div class="blk"><div class="blk-lbl">Timing</div><div class="blk-body">'+d.timing_pre+'</div></div>';
   pH+='<div class="blk"><div class="blk-lbl">Opções de refeição</div><div class="blk-body">'+li(d.alim_pre)+'</div></div>';
@@ -425,7 +263,6 @@ function render(d){
   if(d.nota_hora)pH+='<div class="nota">'+d.nota_hora+'</div>';
   document.getElementById('rpre').innerHTML=pH;
 
-  // INTRA
   var iH='';
   if(d.intra.tipo==='none'){
     iH='<div class="nota">'+d.intra.txt+'</div>';
@@ -441,7 +278,6 @@ function render(d){
   }
   document.getElementById('rintra').innerHTML=iH;
 
-  // PÓS
   var poH='<div class="pills"><span class="pill pa">'+d.pMin+'–'+d.pMax+'g proteína</span><span class="pill pg">'+d.cho_pos+'g HC</span></div>';
   if(d.aviso_pos)poH+='<div class="aviso">'+d.aviso_pos+'</div>';
   poH+='<div class="blk"><div class="blk-lbl">Timing</div><div class="blk-body">'+d.timing_pos+'</div></div>';
@@ -454,7 +290,6 @@ function render(d){
   document.getElementById('rsect').scrollIntoView({behavior:'smooth',block:'start'});
 }
 
-// ── BOTÃO ────────────────────────────────────────────────────────────
 function showErr(m){var b=document.getElementById('eb');b.textContent=m;b.style.display='block';}
 function clearErr(){document.getElementById('eb').style.display='none';}
 
