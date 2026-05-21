@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Coaching Nutrition — cbikelab</title>
+<title>Coaching Nutrition — ndurance.pt</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
   :root {
@@ -63,16 +63,39 @@
   .nota{font-size:12px;color:var(--muted);padding:9px 12px;background:var(--bg2);border-radius:10px;border-left:3px solid rgba(255,255,255,0.1);margin-top:8px}
   .h{display:none}
   @media(max-width:520px){.g4{grid-template-columns:1fr 1fr}.g2,.g3{grid-template-columns:1fr}.page{padding:1.5rem 1rem 4rem}}
+
+  #auth-overlay{position:fixed;inset:0;background:#111a14;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;padding:1.5rem}
+  .auth-logo{width:48px;height:48px;background:#f07b6b;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;color:#fff;margin-bottom:1rem}
+  .auth-brand{font-weight:800;font-size:22px;letter-spacing:-.3px;margin-bottom:.25rem;color:#eef2ee}
+  .auth-brand span{color:#f07b6b}
+  .auth-desc{font-size:13px;color:#7a9a82;margin-bottom:2rem;text-align:center;line-height:1.6}
+  #clerk-sign-in{width:100%;max-width:400px}
+  #app-wrap{display:none}
+  .user-bar{font-size:12px;color:#7a9a82;display:flex;align-items:center;gap:10px}
+  .sign-out-btn{font-size:12px;color:#f07b6b;background:none;border:1px solid rgba(240,123,107,.3);border-radius:999px;padding:3px 12px;cursor:pointer;font-family:inherit}
+  .sign-out-btn:hover{background:rgba(240,123,107,.1)}
 </style>
 </head>
 <body>
 
+  <div id="auth-overlay">
+    <div class="auth-logo">N</div>
+    <div class="auth-brand">n<span>durance</span>.pt</div>
+    <p class="auth-desc">Área reservada a atletas autorizados.<br>Introduz o teu email para aceder.</p>
+    <div id="clerk-sign-in"></div>
+  </div>
+  <div id="app-wrap">
+
 <div class="topbar">
   <div class="logo">N</div>
   <span class="topbar-title">Coaching Nutrition</span>
-  <span class="topbar-sub" style="margin-left:2px">cbikelab</span>
+  <span class="topbar-sub" style="margin-left:2px">ndurance.pt</span>
   <span class="topbar-right">Planeador Nutricional de Treino</span>
 </div>
+    <div class="user-bar"><span id="user-email"></span><button class="sign-out-btn" onclick="clerkSignOut()">Sair</button></div>
+  </div>
+    <div class="user-bar"><span id="user-email"></span><button class="sign-out-btn" onclick="clerkSignOut()">Sair</button></div>
+  </div>
 
 <div class="page">
   <div class="page-hd">
@@ -306,5 +329,30 @@ document.getElementById('gbtn').addEventListener('click',function(){
   render(calc(tss,ifv,dur,age,wt,hora));
 });
 </script>
+  <script>
+(function(){
+  var s=document.createElement('script');
+  s.src='https://natural-toucan-83.clerk.accounts.dev/npm/@clerk/clerk-js@latest/dist/clerk.browser.js';
+  s.setAttribute('data-clerk-publishable-key','pk_test_bmF0dXJhbC10b3VjYW4tODMuY2xlcmsuYWNjb3VudHMuZGV2JA');
+  s.onload=async function(){
+    await window.Clerk.load();
+    var ap={variables:{colorPrimary:'#f07b6b',colorBackground:'#1c2a1e',colorInputBackground:'#223025',colorText:'#eef2ee',colorTextSecondary:'#7a9a82',borderRadius:'10px',fontFamily:'Inter,system-ui,sans-serif'}};
+    function showApp(){
+      document.getElementById('auth-overlay').style.display='none';
+      document.getElementById('app-wrap').style.display='block';
+      var u=window.Clerk.user;
+      if(u){var el=document.getElementById('user-email');if(el)el.textContent=u.primaryEmailAddress?u.primaryEmailAddress.emailAddress:'';}
+    }
+    if(window.Clerk.user){showApp();}
+    else{
+      window.Clerk.mountSignIn(document.getElementById('clerk-sign-in'),{appearance:ap});
+      window.Clerk.addListener(function(e){if(e.user)showApp();});
+    }
+  };
+  document.head.appendChild(s);
+})();
+function clerkSignOut(){window.Clerk.signOut().then(function(){location.reload();});}
+</script>
+  </div><!-- /app-wrap -->
 </body>
 </html>
